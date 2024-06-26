@@ -69,7 +69,11 @@ class ScreenView:
     def text(self) -> Optional[str]:
         self.root.mainloop()
 
-        coords = (*self.start, *self.finish)
+        x1, y1, x2, y2 = coords = (*self.start, *self.finish)
+
+        if x1 > x2 and y1 > y2:
+            coords = (x2, y2, x1, y1)
+
         text = ocr.image_to_string(self.screenshot.crop(coords))
 
         if not text:
