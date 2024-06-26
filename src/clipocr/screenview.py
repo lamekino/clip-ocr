@@ -21,7 +21,7 @@ class ScreenView:
         self.start = (0, 0)
         self.finish = (0, 0)
 
-        self.selection = None
+        self.selection: Optional[object] = None
         self.screenshot = ImageGrab.grab()
         self.canvas = ScreenView.__config_window(self.root, self.screenshot)
 
@@ -64,7 +64,9 @@ class ScreenView:
     def __mouse_hold(self, event: Event) -> None:
         self.finish = (event.x, event.y)
 
-        self.canvas.coords(self.selection, *self.start, *self.finish)
+        self.canvas.coords(self.selection,  # type: ignore
+                           *self.start,
+                           *self.finish)
 
     def text(self) -> Optional[str]:
         self.root.mainloop()
