@@ -4,10 +4,10 @@ import subprocess
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from notification.notification import Notification
-
-from clipocr.screenview import ScreenView
-from clipocr.config import read_config
+# TODO: namespace these to clipocr.<module>
+from config import read_config
+from notification import Notification
+from screenview import ScreenView
 
 
 def main() -> int:
