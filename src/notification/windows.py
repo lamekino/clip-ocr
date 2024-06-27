@@ -1,29 +1,16 @@
-import platform
 import subprocess
 
-from abc import ABC, abstractmethod
 from typing import Literal
+
 from pathlib import Path
+from notification import Notification
 
 
+# https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltipicon
+BalloonTipIcon = Literal["Error", "Info", "None", "Warning"]
 ScriptBlockPS1 = str
 Command = str
 Milliseconds = int
-BalloonTipIcon = Literal["Error", "Info", "None", "Warning"]
-
-
-class Notification(ABC):
-    @classmethod
-    def factory(cls):
-        match platform.system():
-            case "Windows":
-                return WindowsNotification()
-            case _ as unsupported:
-                raise NotImplementedError(unsupported)
-
-    @abstractmethod
-    def send(self, title: str, text: str) -> None:
-        pass
 
 
 class WindowsNotification(Notification):

@@ -4,10 +4,10 @@ import subprocess
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from notification.notification import Notification
+
 from clipocr.screenview import ScreenView
 from clipocr.config import read_config
-
-from notification.windows_notify import Notification
 
 
 def main() -> int:
@@ -22,8 +22,11 @@ def main() -> int:
     with NamedTemporaryFile(delete=False, mode="w", suffix=".txt") as tmp:
         tmp.write(text)
 
-    notification.send("Clip-OCR copied text:", text.replace('\n', ' '))
     # subprocess.run([str(config.editor), tmp.name])
+    # need need to get an event handle for the click. powershell seems like a
+    # pain. but i think that we can make a simple function that sends a signal
+    # to this one and then opens the text from the screenview
+    notification.send("Clip-OCR copied text:", text.replace('\n', ' '))
 
     Path(tmp.name).unlink(missing_ok=True)
 
