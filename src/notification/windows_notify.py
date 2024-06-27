@@ -2,7 +2,7 @@ import platform
 import subprocess
 
 from abc import ABC, abstractmethod
-from typing import Literal, Iterable
+from typing import Literal
 from pathlib import Path
 
 
@@ -44,7 +44,7 @@ class WindowsNotification(Notification):
         def new_balloon_tip_icon(value: BalloonTipIcon) -> ScriptBlockPS1:
             return f"[System.Windows.Forms.ToolTipIcon]::{value}"
 
-        def script_block(*cmds) -> ScriptBlockPS1:
+        def script_block(*cmds: Command) -> ScriptBlockPS1:
             return "{{{}}}".format(";".join(cmds))
 
         OBJ_ID = "notifier"
