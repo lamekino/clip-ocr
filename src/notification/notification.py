@@ -1,12 +1,10 @@
 import platform
 
-from abc import ABC, abstractmethod
-
-from windows import WindowsNotification
-from linux import LinuxNotification
+from .windows import WindowsNotification
+from .linux import LinuxNotification
 
 
-class Notification(ABC):
+class Notification:
     @classmethod
     def factory(cls):
         match platform.system():
@@ -16,7 +14,3 @@ class Notification(ABC):
                 return LinuxNotification()
             case _ as unsupported:
                 raise NotImplementedError(unsupported)
-
-    @abstractmethod
-    def send(self, title: str, text: str) -> None:
-        pass

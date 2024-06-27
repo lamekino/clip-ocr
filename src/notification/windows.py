@@ -3,17 +3,17 @@ import subprocess
 from typing import Literal
 
 from pathlib import Path
-from notification import Notification
+from .sender import Sender
 
 
 # https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltipicon
-BalloonTipIcon = Literal["Error", "Info", "None", "Warning"]
+BalloonTip = Literal["Error", "Info", "None", "Warning"]
 ScriptBlockPS1 = str
 Command = str
 Milliseconds = int
 
 
-class WindowsNotification(Notification):
+class WindowsNotification(Sender):
     def __init__(self):
         # TODO: make this my own icon
         self.icon = Path(r"C:\Windows\SysWOW64\OneDrive.ico")
@@ -28,7 +28,7 @@ class WindowsNotification(Notification):
 
             return f"[System.Drawing.Icon]::new('{str(path)}')"
 
-        def new_balloon_tip_icon(value: BalloonTipIcon) -> ScriptBlockPS1:
+        def new_balloon_tip_icon(value: BalloonTip) -> ScriptBlockPS1:
             return f"[System.Windows.Forms.ToolTipIcon]::{value}"
 
         def script_block(*cmds: Command) -> ScriptBlockPS1:
