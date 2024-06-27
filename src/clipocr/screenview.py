@@ -26,7 +26,6 @@ class ScreenView:
 
         if tesseract_cmd is not None:
             ocr.pytesseract.tesseract_cmd = str(tesseract_cmd)
-            print(ocr.pytesseract.tesseract_cmd)
 
         bindings = {
             "<Button-1>": self.__mouse_click,
