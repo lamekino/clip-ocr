@@ -48,7 +48,6 @@ class WindowsNotification(Sender):
             f"${OBJ_ID}.BalloonTipTitle = '{title}'",
             f"${OBJ_ID}.BalloonTipText = '{text}'",
             # enable notification display
-            f"${OBJ_ID}.Text = 'test'",
             f"${OBJ_ID}.Visible = $true",
 
             # set time in milliseconds and display the notification
