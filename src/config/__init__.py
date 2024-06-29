@@ -1,2 +1,1 @@
-import config.Config
-import config.read_config
+from config.config import Config, read_config

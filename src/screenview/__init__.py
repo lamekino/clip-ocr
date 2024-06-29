@@ -1,1 +1,1 @@
-import screenview.ScreenView
+from screenview.screenview import ScreenView
