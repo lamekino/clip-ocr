@@ -7,12 +7,14 @@ from .sender import Sender
 
 
 # https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltipicon
-BalloonTip = Literal["Error", "Info", "None", "Warning"]
+ToolTipIcon = Literal["Error", "Info", "None", "Warning"]
 ScriptBlockPS1 = str
 Command = str
 Milliseconds = int
 
+# TODO: set this to my own
 ICO_PATH = Path(r"C:\Windows\SysWOW64\OneDrive.ico")
+PS_RESTRICED_CHARS = set('$`"\'&()[]{}')
 
 
 class WindowsNotification(Sender):
@@ -26,38 +28,49 @@ def notification_cmd(
         text: str,
         icon: Path,
         time: Milliseconds = 20000,
-        obj_id: str = "notifier") -> Command:
+        __id: str = "notifier") -> Command:
     def new_icon(path: Path) -> ScriptBlockPS1:
         assert path.exists()
         assert path.is_file()
 
         return f"[System.Drawing.Icon]::new('{str(path)}')"
 
-    def new_balloon_tip_icon(value: BalloonTip) -> ScriptBlockPS1:
+    def new_tool_tip_icon(value: ToolTipIcon) -> ScriptBlockPS1:
         return f"[System.Windows.Forms.ToolTipIcon]::{value}"
 
     def set_visible(b: bool) -> ScriptBlockPS1:
         return "$" + str(b).lower()
 
+    def set_string(s: str) -> ScriptBlockPS1:
+        return "".join(ch for ch in s if ch not in PS_RESTRICED_CHARS)
+
     def script_block(*cmds: Command) -> ScriptBlockPS1:
         return "{{{}}}".format(";".join(cmds))
 
+    def C(f, x):
+        f(x)
+        return x
+
     # TODO: feed commands to powershell using a pipe
-    return "powershell.exe \"& {}\"".format(script_block(
+    # BUG: we need to filter out restricted characters such as "'$`@ there
+    # should be a list of these
+    # write filter(lambda x: x in set(...), xs) O(m lg n) m = |xs|, n = |set|
+    # but there might be a more 'pythonic' way
+    return C(print, "powershell.exe \"& {}\"".format(script_block(
         # import the .NET class
         "Add-Type -AssemblyName System.Windows.Forms",
         # create the notification object
-        f"$global:{obj_id} = New-Object System.Windows.Forms.NotifyIcon",
+        f"$global:{__id} = New-Object System.Windows.Forms.NotifyIcon",
 
         # set the icons
-        f"${obj_id}.Icon = {new_icon(icon)}",
-        f"${obj_id}.BalloonTipIcon = {new_balloon_tip_icon("None")}",
+        f"${__id}.Icon = {new_icon(icon)}",
+        f"${__id}.BalloonTipIcon = {new_tool_tip_icon("None")}",
         # set the titles
-        f"${obj_id}.BalloonTipTitle = '{title}'",
-        f"${obj_id}.BalloonTipText = '{text}'",
+        f"${__id}.BalloonTipTitle = '{set_string(title)}'",
+        f"${__id}.BalloonTipText = '{set_string(text)}'",
         # enable notification display
-        f"${obj_id}.Visible = {set_visible(True)}",
+        f"${__id}.Visible = {set_visible(True)}",
 
         # set time in milliseconds and display the notification
-        f"${obj_id}.ShowBalloonTip({time})",
-    ))
+        f"${__id}.ShowBalloonTip({time})",
+    )))
