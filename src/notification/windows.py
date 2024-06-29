@@ -47,16 +47,12 @@ def notification_cmd(
     def script_block(*cmds: Command) -> ScriptBlockPS1:
         return "{{{}}}".format(";".join(cmds))
 
-    def C(f, x):
-        f(x)
-        return x
-
     # TODO: feed commands to powershell using a pipe
     # BUG: we need to filter out restricted characters such as "'$`@ there
     # should be a list of these
     # write filter(lambda x: x in set(...), xs) O(m lg n) m = |xs|, n = |set|
     # but there might be a more 'pythonic' way
-    return C(print, "powershell.exe \"& {}\"".format(script_block(
+    return "powershell.exe \"& {}\"".format(script_block(
         # import the .NET class
         "Add-Type -AssemblyName System.Windows.Forms",
         # create the notification object
@@ -73,4 +69,4 @@ def notification_cmd(
 
         # set time in milliseconds and display the notification
         f"${__id}.ShowBalloonTip({time})",
-    )))
+    ))
